@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Linq;
 
 class Program
 {
@@ -23,6 +24,11 @@ class Program
         Vetor available:
         Guarda a quantidade disponível de cada tipo de recurso.
     */
+
+    private static bool continuousMode = false;
+
+    // Modo Loop Infinito    
+
     private static int[] available = Array.Empty<int>();
 
     /*
@@ -75,15 +81,34 @@ class Program
             de comando.
         */
 
-        if (args.Length == 0)
+                if (args.Length == 0)
         {
             Console.WriteLine("Erro: informe a quantidade de recursos de cada tipo.");
-            Console.WriteLine("Exemplo de execução:");
+            Console.WriteLine("Exemplos de execução:");
+            Console.WriteLine("dotnet run -- 10 5 7");
+            Console.WriteLine("dotnet run -- 10 5 7 --continuous");
+            return;
+        }
+
+        // Verifica se o modo contínuo foi solicitado.
+        // Esse argumento permite atender ao loop contínuo pedido no enunciado.
+        continuousMode = args.Contains("--continuous");
+
+        // Separa apenas os argumentos numéricos.
+        // Assim, o programa não tenta converter "--continuous" para número.
+        string[] resourceArgs = args
+            .Where(arg => arg != "--continuous")
+            .ToArray();
+
+        if (resourceArgs.Length == 0)
+        {
+            Console.WriteLine("Erro: informe pelo menos um tipo de recurso.");
+            Console.WriteLine("Exemplo:");
             Console.WriteLine("dotnet run -- 10 5 7");
             return;
         }
 
-        NumberOfResources = args.Length;
+        NumberOfResources = resourceArgs.Length;
 
         // Inicialização das estruturas com base na quantidade de recursos informada.
         available = new int[NumberOfResources];
@@ -94,9 +119,11 @@ class Program
         // Leitura e validação dos recursos recebidos pela linha de comando.
         for (int i = 0; i < NumberOfResources; i++)
         {
-            if (!int.TryParse(args[i], out available[i]) || available[i] < 0)
+            if (!int.TryParse(resourceArgs[i], out available[i]) || available[i] < 0)
             {
                 Console.WriteLine("Erro: todos os recursos devem ser números inteiros maiores ou iguais a zero.");
+                Console.WriteLine("Exemplo válido:");
+                Console.WriteLine("dotnet run -- 10 5 7");
                 return;
             }
         }
@@ -107,6 +134,8 @@ class Program
         Console.WriteLine("======================================");
         Console.WriteLine("     Algoritmo do Banqueiro em C#");
         Console.WriteLine("======================================");
+        Console.WriteLine();
+        Console.WriteLine($"Modo de execução: {(continuousMode ? "contínuo" : "ciclos limitados")}");
         Console.WriteLine();
 
         Console.WriteLine("Estado inicial do sistema:");
@@ -172,14 +201,22 @@ class Program
     private static void CustomerRoutine(int customerId)
     {
         /*
-            Para fins de teste e visualização, usamos um número
-            limitado de ciclos. Isso evita que o programa fique executando
-            infinitamente no terminal.
+            O código possui dois modos de Execução:
 
-            Para loop contínuo, é preciso trocar o for abaixo por:
-            while (true)
+            Modo padrão (Para facilitar Leitura):
+            dotnet run -- 10 5 7
+
+            Executa uma quantidade limitada de ciclos.
+
+            Modo contínuo:
+            dotnet run -- 10 5 7 --continuous
+
+            Executa indefinidamente até que se interrompa usando Ctrl + C.
         */
-        for (int cycle = 1; cycle <= 8; cycle++)
+
+        int cycle = 1;
+
+        while (continuousMode || cycle <= 8)
         {
             Console.WriteLine();
             Console.WriteLine($"Cliente {customerId} iniciou o ciclo {cycle}.");
@@ -234,6 +271,8 @@ class Program
             }
 
             Thread.Sleep(random.Value!.Next(500, 1200));
+
+            cycle++;
         }
     }
 
