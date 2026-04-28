@@ -95,6 +95,34 @@ Recurso 2: 7 unidades
 
 O uso do `--` é necessário para separar os argumentos do comando `dotnet run` dos argumentos enviados para o programa.
 
+## Observação sobre o loop dos clientes
+
+### Modos de execução
+
+O programa possui dois modos de execução.
+
+### Modo com ciclos limitados
+
+Esse modo limita a quantidade dos ciclos, então é bom para teste e vizualização.
+
+```bash
+dotnet run -- 10 5 7
+```
+
+### Modo contínuo
+
+Este modo executa os clientes em loop contínuo e indefinido.
+
+```bash
+dotnet run -- 10 5 7 --continuous
+```
+
+Para interromper faça:
+
+```text
+Ctrl + C
+```
+
 ## Funcionamento do programa
 
 Ao ser executado, o programa realiza os seguintes passos:
@@ -213,22 +241,6 @@ Após o cumprimento dos ciclos definidos para cada cliente, o programa encerra a
 
 ![Finalização da Execução](screenshots/finalizacao-execucao.png)
 > **Legenda:** Encerramento da simulação. O log exibe a mensagem "Execução finalizada" seguida pelo estado final das estruturas. É possível verificar o saldo de recursos remanescentes no vetor `Available` e quais processos ainda mantinham alocações no momento do término.
-
-## Observação sobre o loop dos clientes
-
-Nesta implementação, foi utilizado um número limitado de ciclos para facilitar a execução, os testes e a visualização.
-
-Caso seja necessário executar indefinidamente, basta substituir no código:
-
-```csharp
-for (int cycle = 1; cycle <= 8; cycle++)
-```
-
-por:
-
-```csharp
-while (true)
-```
 
 ## Conclusão
 
